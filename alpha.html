@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alpha Tech Enterprise | Premium Tech Agency</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --transition-snappy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Core Themes */
+    .theme-obsidian {
+      --bg-main: #000000;
+      --bg-secondary: #0a0a0a;
+      --text-main: #ffffff;
+      --text-muted: #a3a3a3;
+      --accent: #ffffff;
+      --accent-dark: #000000;
+      --accent-glow: rgba(255, 255, 255, 0.4);
+      --glass-bg: rgba(20, 20, 20, 0.4);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --grid-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .theme-cyber {
+      --bg-main: #02020a;
+      --bg-secondary: #080816;
+      --text-main: #e0f2fe;
+      --text-muted: #7dd3fc;
+      --accent: #00f0ff;
+      --accent-dark: #011826;
+      --accent-glow: rgba(0, 240, 255, 0.5);
+      --glass-bg: rgba(0, 240, 255, 0.05);
+      --glass-border: rgba(0, 240, 255, 0.2);
+      --grid-color: rgba(0, 240, 255, 0.04);
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      transition: background-color 0.7s ease, color 0.7s ease;
+      overflow-x: hidden;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Fresh Digital Grid Background */
+    .bg-grid {
+      background-size: 50px 50px;
+      background-image: 
+        linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+      mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+      -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+    }
+
+    /* Ultra-Premium Glassmorphism */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      transition: all 0.4s ease;
+    }
+
+    /* 3D Perspective Hover System */
+    .perspective-container { perspective: 1500px; }
+    .card-3d-hover {
+      transition: transform 0.6s var(--transition-snappy), box-shadow 0.6s ease, border-color 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    .card-3d-hover:hover {
+      transform: rotateX(6deg) rotateY(-6deg) translateY(-8px) translateZ(12px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px var(--accent-glow);
+      border-color: var(--accent);
+    }
+
+    /* Spotlight Mouse Tracking Engine */
+    .spotlight-card { position: relative; overflow: hidden; }
+    .spotlight-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(600px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), rgba(255,255,255,0.06), transparent 40%);
+      z-index: 0; opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+    }
+    .spotlight-card:hover::before { opacity: 1; }
+    .glass-content { position: relative; z-index: 1; }
+
+    /* Typography & Reveal Animations */
+    .massive-title { text-shadow: 0 10px 40px var(--accent-glow); }
+    .reveal-element { opacity: 0; transform: translateY(30px); transition: all 1s ease; }
+    .reveal-element.active { opacity: 1; transform: translateY(0); }
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+
+    /* Infinite Tech Marquee */
+    .marquee-container { display: flex; overflow: hidden; gap: 3rem; user-select: none; }
+    .marquee-content {
+      display: flex; flex-shrink: 0; gap: 3rem; align-items: center;
+      animation: scroll 25s linear infinite;
+    }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(calc(-100% - 3rem)); } }
+
+    /* Hide element utility */
+    .hidden-state { opacity: 0; transform: scale(0.9); pointer-events: none; width: 0; height: 0; }
+    .visible-state { opacity: 1; transform: scale(1); pointer-events: auto; }
+  </style>
+</head>
+<body id="appWrapper" class="theme-obsidian min-h-screen relative">
+
+  <div class="fixed inset-0 bg-[var(--bg-main)] -z-30 transition-colors duration-700"></div>
+  <div class="fixed inset-0 bg-grid -z-20 pointer-events-none"></div>
+  <div class="fixed top-[15%] left-1/2 -translate-x-1/2 w-[600px] h-[500px] bg-[var(--accent)] opacity-[0.05] blur-[120px] rounded-[100%] -z-10 pointer-events-none"></div>
+  
+  <canvas id="particleCanvas" class="fixed inset-0 z-0 pointer-events-none opacity-60"></canvas>
+
+  <nav id="navbar" class="fixed w-full z-50 flex justify-center transition-all duration-500 top-6">
+    <div id="navPill" class="flex items-center justify-between rounded-full transition-all duration-500 glass-panel shadow-2xl w-[92%] max-w-6xl px-6 py-3.5">
+      
+      <div class="flex items-center gap-2 cursor-pointer group">
+        <i data-lucide="globe" class="w-5 h-5 transition-transform group-hover:rotate-180 duration-700" style="color: var(--accent);"></i>
+        <span class="font-black text-lg tracking-tighter" style="text-shadow: 0 0 15px var(--accent-glow);">
+          ALPHA<span class="font-light" style="color: var(--text-muted);">TECH</span>
+        </span>
+      </div>
+      
+      <div class="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest" style="color: var(--text-muted);">
+        <a href="#services" class="hover:text-[var(--text-main)] transition-colors">Expertise</a>
+        <a href="#process" class="hover:text-[var(--text-main)] transition-colors">Process</a>
+        <a href="#enterprise" class="hover:text-[var(--text-main)] transition-colors">Stats</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+         <div class="hidden lg:flex bg-[var(--bg-main)] rounded-full p-0.5 border border-[var(--glass-border)] mr-2">
+            <button onclick="setTheme('theme-obsidian')" class="theme-btn px-3 py-1 text-[10px] font-bold uppercase rounded-full transition-all bg-[var(--text-main)] text-[var(--bg-main)]" data-theme="theme-obsidian">Obs</button>
+            <button onclick="setTheme('theme-cyber')" class="theme-btn px-3 py-1 text-[10px] font-bold uppercase rounded-full transition-all text-[var(--text-muted)] hover:text-[var(--text-main)]" data-theme="theme-cyber">Cyb</button>
+          </div>
+        <button class="bg-[var(--text-main)] text-[var(--bg-main)] px-5 py-2 rounded-full text-[11px] font-bold hover:scale-105 transition-transform flex items-center gap-1.5 shadow-[0_0_20px_var(--accent-glow)]">
+          Let's Build <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative z-10 pt-40 pb-20 px-5 max-w-7xl mx-auto">
+    
+    <section class="min-h-[75vh] flex flex-col justify-center items-center text-center reveal-element active relative">
+      <div class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full glass-panel border border-[var(--accent)] border-opacity-40 text-[10px] font-bold tracking-widest uppercase mb-8 shadow-[0_0_20px_var(--accent-glow)]" style="color: var(--accent);">
+        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> India's Premium Tech Agency
+      </div>
+      
+      <h1 class="text-5xl md:text-7xl lg:text-[7rem] font-black tracking-tighter leading-[1.05] mb-6 massive-title text-[var(--text-main)]">
+        Digital Duniya Mein <br />
+        <span style="color: var(--accent);">Supremacy Banao.</span>
+      </h1>
+      
+      <div class="max-w-3xl mx-auto mb-10">
+        <p class="text-base md:text-xl font-light mb-8 leading-relaxed" style="color: var(--text-muted);">
+          <strong class="font-bold text-[var(--text-main)] tracking-wide">ALPHA TECH</strong> sirf websites nahi banata. Hum aapke ideas ko ek <span class="text-[var(--text-main)] font-medium">Enterprise-Grade Software</span> mein badalte hain jo market dominate kare.
+        </p>
+        
+        <div class="flex flex-wrap justify-center gap-3 perspective-container">
+          <div class="glass-panel px-4 py-2.5 rounded-2xl text-[11px] md:text-xs font-semibold flex items-center gap-2 card-3d-hover">
+            <span class="text-sm">🚀</span> 10x Faster Delivery
+          </div>
+          <div class="glass-panel px-4 py-2.5 rounded-2xl text-[11px] md:text-xs font-semibold flex items-center gap-2 card-3d-hover delay-100">
+            <span class="text-sm">💎</span> Premium 3D UI/UX
+          </div>
+          <div class="glass-panel px-4 py-2.5 rounded-2xl text-[11px] md:text-xs font-semibold flex items-center gap-2 card-3d-hover delay-200">
+            <span class="text-sm">🔒</span> Bank-Grade Security
+          </div>
+          <div class="glass-panel px-4 py-2.5 rounded-2xl text-[11px] md:text-xs font-semibold flex items-center gap-2 card-3d-hover delay-300">
+            <span class="text-sm">🤖</span> AI Automation Systems
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex flex-col sm:flex-row gap-4 mt-4">
+        <button class="bg-[var(--text-main)] text-[var(--bg-main)] px-8 py-4 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center justify-center gap-2 shadow-[0_0_30px_var(--accent-glow)]">
+          Let's Build Together <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+        <button class="glass-panel px-8 py-4 rounded-full text-sm font-bold hover:bg-[var(--glass-border)] transition-colors flex items-center justify-center gap-2 group">
+          <i data-lucide="play" class="w-4 h-4 group-hover:text-[var(--accent)] transition-colors fill-current"></i> Showreel Dekhein
+        </button>
+      </div>
+    </section>
+
+    <section class="py-12 border-y border-[var(--glass-border)] bg-[var(--bg-secondary)] reveal-element relative overflow-hidden -mx-5 px-5 mt-10">
+       <div class="marquee-container opacity-50">
+          <div class="marquee-content font-mono text-2xl font-bold" style="color: var(--text-muted);">
+            <span class="hover:text-[var(--accent)] transition-colors">Next.js 15</span>
+            <span class="hover:text-[var(--accent)] transition-colors">React</span>
+            <span class="hover:text-[var(--accent)] transition-colors">TypeScript</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Node.js</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Python</span>
+            <span class="hover:text-[var(--accent)] transition-colors">AWS</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Docker</span>
+            <span class="hover:text-[var(--accent)] transition-colors">PostgreSQL</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Three.js</span>
+            <span class="hover:text-[var(--accent)] transition-colors">TailwindCSS</span>
+          </div>
+          <div class="marquee-content font-mono text-2xl font-bold" style="color: var(--text-muted);">
+            <span class="hover:text-[var(--accent)] transition-colors">Next.js 15</span>
+            <span class="hover:text-[var(--accent)] transition-colors">React</span>
+            <span class="hover:text-[var(--accent)] transition-colors">TypeScript</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Node.js</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Python</span>
+            <span class="hover:text-[var(--accent)] transition-colors">AWS</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Docker</span>
+            <span class="hover:text-[var(--accent)] transition-colors">PostgreSQL</span>
+            <span class="hover:text-[var(--accent)] transition-colors">Three.js</span>
+            <span class="hover:text-[var(--accent)] transition-colors">TailwindCSS</span>
+          </div>
+       </div>
+    </section>
+
+    <section id="services" class="py-28 relative z-10">
+      <div class="text-center mb-16 reveal-element">
+        <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-4">Hamari 3D Expertise.</h2>
+        <p class="text-base md:text-lg max-w-2xl mx-auto" style="color: var(--text-muted);">
+          World-class engineering jo aapke users ko pehli nazar mein impress kar de.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 perspective-container">
+        <div class="glass-panel spotlight-card p-8 rounded-[2rem] reveal-element card-3d-hover relative overflow-hidden">
+          <div class="glass-content">
+            <div class="w-14 h-14 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] flex items-center justify-center mb-6 shadow-lg">
+              <i data-lucide="layers" class="w-6 h-6" style="color: var(--text-main);"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Cinematic UI/UX</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--text-muted);">
+              React aur Three.js se bane immersive web experiences jo ekdum native app jaisa premium feel dete hain.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-panel spotlight-card p-8 rounded-[2rem] reveal-element delay-100 card-3d-hover border-[var(--accent)] border-opacity-50 shadow-[0_0_30px_var(--accent-glow)] relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--accent)] opacity-20 blur-3xl rounded-full"></div>
+          <div class="glass-content">
+            <div class="w-14 h-14 rounded-2xl bg-[var(--accent)] flex items-center justify-center mb-6 shadow-lg">
+              <i data-lucide="server" class="w-6 h-6" style="color: var(--accent-dark);"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Enterprise Backend</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--text-muted);">
+              Microservices architecture, scalable APIs, aur heavy traffic handle karne wale bulletproof server systems.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-panel spotlight-card p-8 rounded-[2rem] reveal-element delay-200 card-3d-hover relative overflow-hidden">
+          <div class="glass-content">
+            <div class="w-14 h-14 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--glass-border)] flex items-center justify-center mb-6 shadow-lg">
+              <i data-lucide="cloud" class="w-6 h-6" style="color: var(--text-main);"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">Cloud DevOps</h3>
+            <p class="text-sm leading-relaxed" style="color: var(--text-muted);">
+              AWS Serverless, Docker containers, aur zero-downtime CI/CD auto-scaling deployments.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process" class="py-24 relative">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-black text-center mb-20 reveal-element">Hamara Process.</h2>
+        
+        <div class="relative border-l-2 border-[var(--glass-border)] pl-8 md:pl-0 md:border-none space-y-16">
+          
+          <div class="relative md:flex items-center justify-between reveal-element delay-0">
+            <div class="md:w-5/12 md:text-right pr-8 text-left">
+              <div class="text-[var(--accent)] font-mono text-xs mb-2 font-bold">Step 01</div>
+              <h4 class="text-2xl font-bold mb-2">System Architecture</h4>
+              <p class="text-sm" style="color: var(--text-muted);">Data schemas aur API planning bina code likhe.</p>
+            </div>
+            <div class="absolute -left-[45px] md:static md:w-2/12 flex justify-center z-10">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--glass-border)]">
+                <i data-lucide="workflow" class="w-5 h-5" style="color: var(--accent);"></i>
+              </div>
+            </div>
+            <div class="hidden md:block md:w-5/12"></div>
+            <div class="hidden md:block absolute left-1/2 top-12 bottom-[-4rem] w-0.5 bg-[var(--glass-border)] -translate-x-1/2 z-0"></div>
+          </div>
+
+          <div class="relative md:flex items-center justify-between reveal-element delay-100">
+            <div class="hidden md:block md:w-5/12"></div>
+            <div class="absolute -left-[45px] md:static md:w-2/12 flex justify-center z-10">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--glass-border)]">
+                <i data-lucide="code-2" class="w-5 h-5" style="color: var(--accent);"></i>
+              </div>
+            </div>
+            <div class="md:w-5/12 pl-0 md:pl-8 mt-4 md:mt-0 text-left">
+              <div class="text-[var(--accent)] font-mono text-xs mb-2 font-bold">Step 02</div>
+              <h4 class="text-2xl font-bold mb-2">Agile Development</h4>
+              <p class="text-sm" style="color: var(--text-muted);">Sprints mein live environment par fast development.</p>
+            </div>
+            <div class="hidden md:block absolute left-1/2 top-12 bottom-[-4rem] w-0.5 bg-[var(--glass-border)] -translate-x-1/2 z-0"></div>
+          </div>
+
+          <div class="relative md:flex items-center justify-between reveal-element delay-200">
+            <div class="md:w-5/12 md:text-right pr-8 text-left">
+              <div class="text-[var(--accent)] font-mono text-xs mb-2 font-bold">Step 03</div>
+              <h4 class="text-2xl font-bold mb-2">QA & Security</h4>
+              <p class="text-sm" style="color: var(--text-muted);">Rigorous testing aur security audits deployment se pehle.</p>
+            </div>
+            <div class="absolute -left-[45px] md:static md:w-2/12 flex justify-center z-10">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--glass-border)]">
+                <i data-lucide="shield-check" class="w-5 h-5" style="color: var(--accent);"></i>
+              </div>
+            </div>
+            <div class="hidden md:block md:w-5/12"></div>
+            <div class="hidden md:block absolute left-1/2 top-12 bottom-[-4rem] w-0.5 bg-[var(--glass-border)] -translate-x-1/2 z-0"></div>
+          </div>
+
+          <div class="relative md:flex items-center justify-between reveal-element delay-300">
+            <div class="hidden md:block md:w-5/12"></div>
+            <div class="absolute -left-[45px] md:static md:w-2/12 flex justify-center z-10">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-main)] border-2 border-[var(--text-main)] shadow-[0_0_20px_var(--accent-glow)]">
+                <i data-lucide="zap" class="w-5 h-5" style="color: var(--text-main);"></i>
+              </div>
+            </div>
+            <div class="md:w-5/12 pl-0 md:pl-8 mt-4 md:mt-0 text-left">
+              <div class="text-[var(--accent)] font-mono text-xs mb-2 font-bold">Step 04</div>
+              <h4 class="text-2xl font-bold mb-2">Launch & Scale</h4>
+              <p class="text-sm" style="color: var(--text-muted);">Production deployment aur 24/7 server monitoring.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="enterprise" class="py-20 border-y border-[var(--glass-border)] relative overflow-hidden bg-[var(--bg-secondary)] rounded-[3rem] reveal-element my-20 shadow-2xl">
+      <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-[var(--glass-border)] px-6">
+        <div class="text-center px-2 group">
+          <div class="text-4xl md:text-6xl font-black mb-2 transition-transform group-hover:scale-110 duration-300">5M+</div>
+          <div class="text-[10px] md:text-xs tracking-widest uppercase font-bold" style="color: var(--text-muted);">Lines of Code</div>
+        </div>
+        <div class="text-center px-2 group">
+          <div class="text-4xl md:text-6xl font-black mb-2 transition-transform group-hover:scale-110 duration-300">99.9%</div>
+          <div class="text-[10px] md:text-xs tracking-widest uppercase font-bold" style="color: var(--text-muted);">System Uptime</div>
+        </div>
+        <div class="text-center px-2 group">
+          <div class="text-4xl md:text-6xl font-black mb-2 transition-transform group-hover:scale-110 duration-300 text-[var(--accent)]">0</div>
+          <div class="text-[10px] md:text-xs tracking-widest uppercase font-bold" style="color: var(--text-muted);">Data Breaches</div>
+        </div>
+        <div class="text-center px-2 group">
+          <div class="text-4xl md:text-6xl font-black mb-2 transition-transform group-hover:scale-110 duration-300">24/7</div>
+          <div class="text-[10px] md:text-xs tracking-widest uppercase font-bold" style="color: var(--text-muted);">DevOps Support</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 text-center reveal-element perspective-container">
+      <div class="glass-panel p-10 md:p-20 rounded-[3rem] spotlight-card relative overflow-hidden border border-[var(--accent)] border-opacity-30 card-3d-hover">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--accent)] opacity-10 blur-[100px] rounded-full pointer-events-none"></div>
+        <div class="glass-content">
+          <h2 class="text-4xl md:text-6xl font-black tracking-tight mb-6">Naya Project Hai? Let's Build.</h2>
+          <p class="text-base md:text-xl max-w-2xl mx-auto mb-10" style="color: var(--text-muted);">
+            Apne vision ko Alpha Tech ke expert engineers ke saath ek reality banayein.
+          </p>
+          <button class="bg-[var(--text-main)] text-[var(--bg-main)] px-10 py-5 rounded-full text-sm font-black hover:scale-105 transition-transform inline-flex items-center justify-center gap-3 shadow-[0_0_30px_var(--accent-glow)]">
+            Start Consultation <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-[var(--glass-border)] pt-16 pb-8 relative z-10 bg-[var(--bg-secondary)] mt-10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-2 font-black text-2xl tracking-tighter">
+        <i data-lucide="globe" class="w-6 h-6" style="color: var(--accent);"></i>
+        <span>ALPHA<span class="font-light" style="color: var(--text-muted);">TECH</span></span>
+      </div>
+      <p class="text-xs font-mono" style="color: var(--text-muted);">
+        © 2026 Alpha Tech Enterprise. Engineered by Vishu.
+      </p>
+    </div>
+  </footer>
+
+  <div class="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+    <div id="chatWindow" class="hidden-state glass-panel border border-[var(--glass-border)] rounded-2xl overflow-hidden mb-3 transition-all duration-500 origin-bottom-right shadow-[0_20px_40px_rgba(0,0,0,0.5)] w-[300px]">
+      <div class="p-3 border-b border-[var(--glass-border)] flex justify-between items-center bg-[var(--bg-secondary)]">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center">
+            <i data-lucide="terminal" class="w-3.5 h-3.5" style="color: var(--accent-dark);"></i>
+          </div>
+          <div class="font-bold text-xs">Alpha AI Assistant</div>
+        </div>
+        <button onclick="toggleChat()" class="hover:scale-110 p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      
+      <div class="p-4 h-[240px] overflow-y-auto flex flex-col gap-3 text-xs bg-[var(--bg-main)]">
+        <div class="bg-[var(--glass-bg)] border border-[var(--glass-border)] p-3 rounded-xl rounded-tl-sm w-[85%] leading-relaxed">
+          Namaste! Main Alpha Tech AI hoon. Kaise madad karu aapki?
+        </div>
+        <div class="flex flex-col gap-2 w-full items-end mt-1">
+           <button class="bg-[var(--accent)] px-3 py-2 rounded-full font-bold text-[10px] hover:scale-105 transition-transform shadow-md" style="color: var(--accent-dark);">Naya Project Banayein</button>
+           <button class="bg-[var(--bg-secondary)] border border-[var(--glass-border)] px-3 py-2 rounded-full font-bold text-[10px] hover:bg-[var(--glass-border)] transition-colors">Consultation Book Karein</button>
+        </div>
+      </div>
+      
+      <div class="p-3 border-t border-[var(--glass-border)] bg-[var(--bg-secondary)] flex gap-2">
+        <input type="text" placeholder="Message likhein..." class="flex-1 bg-[var(--bg-main)] border border-[var(--glass-border)] rounded-full px-3 py-1.5 text-xs focus:outline-none focus:border-[var(--accent)]" style="color: var(--text-main);" />
+        <button class="w-8 h-8 rounded-full bg-[var(--text-main)] flex items-center justify-center shrink-0">
+          <i data-lucide="send" class="w-3.5 h-3.5" style="color: var(--bg-main);"></i>
+        </button>
+      </div>
+    </div>
+
+    <button onclick="toggleChat()" class="w-12 h-12 rounded-full bg-[var(--text-main)] text-[var(--bg-main)] shadow-[0_5px_20px_var(--accent-glow)] flex items-center justify-center hover:scale-110 transition-all duration-300 relative">
+      <i id="chatIconOpen" data-lucide="terminal" class="w-5 h-5 visible-state absolute"></i>
+      <i id="chatIconClose" data-lucide="x" class="w-5 h-5 hidden-state absolute"></i>
+      <span id="chatPing" class="absolute top-0 right-0 flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-[var(--accent)] border border-[var(--bg-main)]"></span>
+      </span>
+    </button>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // 1. Theme Switcher Logic
+    let currentTheme = 'theme-obsidian';
+    function setTheme(theme) {
+      const appWrapper = document.getElementById('appWrapper');
+      appWrapper.classList.remove(currentTheme);
+      appWrapper.classList.add(theme);
+      currentTheme = theme;
+      
+      // Update toggle buttons visual state
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        if (btn.getAttribute('data-theme') === theme) {
+          btn.classList.add('bg-[var(--text-main)]', 'text-[var(--bg-main)]');
+          btn.classList.remove('text-[var(--text-muted)]');
+        } else {
+          btn.classList.remove('bg-[var(--text-main)]', 'text-[var(--bg-main)]');
+          btn.classList.add('text-[var(--text-muted)]');
+        }
+      });
+    }
+
+    // 2. Chat Toggle Logic
+    let chatIsOpen = false;
+    function toggleChat() {
+      chatIsOpen = !chatIsOpen;
+      const windowEl = document.getElementById('chatWindow');
+      const iconOpen = document.getElementById('chatIconOpen');
+      const iconClose = document.getElementById('chatIconClose');
+      const ping = document.getElementById('chatPing');
+
+      if (chatIsOpen) {
+        windowEl.classList.remove('hidden-state');
+        windowEl.classList.add('visible-state', 'w-[300px]');
+        iconOpen.classList.replace('visible-state', 'hidden-state');
+        iconClose.classList.replace('hidden-state', 'visible-state');
+        if(ping) ping.style.display = 'none';
+      } else {
+        windowEl.classList.remove('visible-state', 'w-[300px]');
+        windowEl.classList.add('hidden-state');
+        iconClose.classList.replace('visible-state', 'hidden-state');
+        iconOpen.classList.replace('hidden-state', 'visible-state');
+        if(ping) ping.style.display = 'flex';
+      }
+    }
+
+    // 3. Navbar Scroll Logic
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      const pill = document.getElementById('navPill');
+      if (window.scrollY > 30) {
+        nav.classList.replace('top-6', 'top-3');
+        pill.classList.add('w-[85%]', 'md:w-[70%]', 'px-4', 'py-2.5');
+        pill.classList.remove('w-[92%]', 'max-w-6xl', 'px-6', 'py-3.5');
+      } else {
+        nav.classList.replace('top-3', 'top-6');
+        pill.classList.remove('w-[85%]', 'md:w-[70%]', 'px-4', 'py-2.5');
+        pill.classList.add('w-[92%]', 'max-w-6xl', 'px-6', 'py-3.5');
+      }
+    });
+
+    // 4. Scroll Reveal Intersection Observer
+    document.addEventListener("DOMContentLoaded", function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+      document.querySelectorAll('.reveal-element').forEach((el) => observer.observe(el));
+    });
+
+    // 5. Spotlight Hover Effect Logic
+    let globalMouseX = -1000;
+    let globalMouseY = -1000;
+    
+    window.addEventListener('mousemove', (e) => {
+      globalMouseX = e.clientX;
+      globalMouseY = e.clientY;
+      
+      document.querySelectorAll('.spotlight-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+      });
+    });
+
+    // 6. Interactive Canvas Particle Engine
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.radius = Math.random() * 1.5;
+        this.density = (Math.random() * 30) + 1;
+      }
+      update() {
+        this.x += this.vx; 
+        this.y += this.vy;
+        
+        if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+        if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+
+        let dx = globalMouseX - this.x;
+        let dy = globalMouseY - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        let maxDistance = 200; // Repel Radius
+        
+        if (distance < maxDistance) {
+          let force = (maxDistance - distance) / maxDistance;
+          this.x -= (dx / distance) * force * this.density;
+          this.y -= (dy / distance) * force * this.density;
+        }
+      }
+      draw(colorStr) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${colorStr}, 0.5)`;
+        ctx.fill();
+      }
+    }
+
+    const initParticles = () => {
+      particles = [];
+      const particleCount = window.innerWidth < 768 ? 40 : 120;
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    };
+    initParticles();
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Determine color based on active theme
+      const colorStr = currentTheme === 'theme-cyber' ? '0, 240, 255' : '255, 255, 255';
+
+      particles.forEach(p => { 
+        p.update(); 
+        p.draw(colorStr); 
+      });
+      
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 130) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(${colorStr}, ${0.15 * (1 - distance/130)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateCanvas);
+    }
+    animateCanvas();
+  </script>
+</body>
+</html>
